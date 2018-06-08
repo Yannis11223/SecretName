@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.Color;
 import javax.swing.border.*;
 
-public class battleship extends JFrame implements ActionListener {
+public class BattleshipGUI extends JFrame implements ActionListener {
 
 	static final int WIDTH = 11;
 	static final int HEIGHT = 11;
@@ -62,18 +62,21 @@ public class battleship extends JFrame implements ActionListener {
 	JLabel uTurnNum = new JLabel("# Turns:");
 	JLabel uHitNum = new JLabel("# Hits:");
 	JLabel uMissNum = new JLabel("# Misses:");
-	JLabel uRemShip = new JLabel("# Remaining Ships:");
+	JLabel uRemShip = new JLabel("# Remaining Ships: 5");
 	JLabel cTurnNum = new JLabel("# Turns:");
 	JLabel cHitNum = new JLabel("# Hits:");
 	JLabel cMissNum = new JLabel("# Misses:");
-	JLabel cRemShip = new JLabel("# Remaining Ships:");
+	JLabel cRemShip = new JLabel("# Remaining Ships: 5");
 	JLabel uChooseLabel = new JLabel("Click a spot to fire");
 	JLabel cChooseLabel = new JLabel("The computer's coordinate choice:");
+	JLabel compComment = new JLabel(" ");
 
 	JTextField enterCoordinate = new JTextField("Enter Coordinate", 10);
 
 	int shipPlacement[][] = new int[11][11];
 	int simpleCoordinate[][] = new int[11][11];
+	int shipPlacementAI[][] = new int[11][11];
+	int shipLength[] = { 2, 3, 3, 4, 5 };
 
 	int uTurnCount = 0;
 	int uHitCount = 0;
@@ -85,7 +88,7 @@ public class battleship extends JFrame implements ActionListener {
 	int cRemShipCount = 0;
 	int tossCoin;
 
-	public battleship() {
+	public BattleshipGUI() {
 		setSize(600, 300);
 		setTitle("Level");
 
@@ -234,6 +237,7 @@ public class battleship extends JFrame implements ActionListener {
 		userOutput.add(uChooseLabel);
 		userOutput.add(space);
 		userOutput.add(outcome);
+		userOutput.add(compComment);
 
 		TitledBorder userScorePanel;
 		userScorePanel = BorderFactory.createTitledBorder(blackline, "User Score");
@@ -273,7 +277,6 @@ public class battleship extends JFrame implements ActionListener {
 		computerScore.add(cMissNum);
 		computerScore.add(cHitNum);
 		computerScore.add(cRemShip);
-		
 
 		nextMove.addActionListener(this);
 		hit.addActionListener(this);
@@ -424,26 +427,86 @@ public class battleship extends JFrame implements ActionListener {
 		cTurnNum.setText("# Turns: " + cTurnCount);
 	}
 
+	public void complexShipAI(int shipPlacementAI[][]) {
+		int randArrangement = 0; // (int)(Math.random()* 2);
+		int orient = (int) (Math.random() * 1);
+		int topOrBottom = (int) (Math.random() * 1);
+		int leftOrRight = (int) (Math.random() * 1);
+		int x = 1;
+
+		if (randArrangement == 0) // edge arrangement
+		{
+			for (int i = 0; i < shipLength.length; i++) {
+				if (orient == 0) // horizontal
+				{
+					if (topOrBottom == 0) // top
+					{
+						x = (int) (Math.random() * (11 - shipLength[i])) + 1;
+						System.out.println(x);
+						for (int a = 0; a < shipLength[i]; a++) {
+							System.out.println(shipPlacement[1][x + a]);
+							shipPlacementAI[1][x + a] = shipLength[i];
+						}
+					} else if (topOrBottom == 1) // bottom
+					{
+						x = (int) (Math.random() * (11 - shipLength[i])) + 1;
+						for (int a = 0; a < shipLength[i]; a++) {
+							System.out.println(shipPlacement[1][x + a]);
+							shipPlacementAI[11][x + a] = shipLength[i];
+						}
+					}
+				} else if (orient == 1) // vertical
+				{
+					if (leftOrRight == 0) // left
+					{
+						x = (int) (Math.random() * (11 - shipLength[i])) + 1;
+						for (int a = 0; a < shipLength[i]; a++) {
+							System.out.println(shipPlacement[x + a][1]);
+							shipPlacementAI[x + a][1] = shipLength[i];
+						}
+					} else if (leftOrRight == 1) // right
+					{
+						x = (int) (Math.random() * (11 - shipLength[i])) + 1;
+						for (int a = 0; a < shipLength[i]; a++) {
+							System.out.println(shipPlacement[x + a][11]);
+							shipPlacementAI[x + a][11] = shipLength[i];
+						}
+					}
+				}
+			}
+		} else if (randArrangement == 1) // middle arrangement
+		{
+		} else if (randArrangement == 2) // middle and edge arrangement
+		{
+		}
+
+	}
+
 	public void actionPerformed(ActionEvent event) {
-		if (easy == event.getSource() || advanced == event.getSource()) {
+		if (easy == event.getSource()) {
 			order();
 		}
+
 		if (toss == event.getSource()) // if toss button is clicked
 		{
 			tossCoin();
 		}
 		if (start == event.getSource()) {
 			gameBoard();
+			simpleShipAI();
 		}
 
 		if (player == event.getSource()) // if player button is clicked
 		{
 			gameBoard();
-		} else if (comp == event.getSource()) // if comp button is clicked
-		{
+			simpleShipAI();
+		} else if (comp == event.getSource()) {
 			gameBoard();
 			simpleCoordinateAI();
-		} else if (hit == event.getSource()) {
+			simpleShipAI();
+		}
+
+		if (hit == event.getSource()) {
 			Coordinate = enterCoordinate.getText();
 			enterCoordinate.setText("");
 			CoordinateSplit = Coordinate.split("");
@@ -462,34 +525,111 @@ public class battleship extends JFrame implements ActionListener {
 			} else {
 				JOptionPane.showMessageDialog(null, "Invalid Coordinate", "Warning", JOptionPane.WARNING_MESSAGE);
 			}
-
-		} else if (nextMove == event.getSource()) {
-			cChooseLabel.setText("The computer's coordinate choice: " + bestMove(ships, probability, hits)[0] + bestMove(ships, probability, hits)[1]);
 		}
-
-		simpleShipAI();
 
 		for (int i = 1; i < HEIGHT; i++) {
 			for (int j = 1; j < WIDTH; j++) {
-				if (button[i][j] == event.getSource() && shipPlacement[i][j] == 1) {
+				if (shipPlacement[i][j] != 0 && button[i][j] == event.getSource()) {
 					button[i][j].setBackground(Color.red);
 					uTurnCount++;
 					uTurnNum.setText("# Turns: " + uTurnCount);
 					uHitCount++;
-					uHitNum.setText("# Misses: " + uHitCount);
+					uHitNum.setText("# Hits: " + uHitCount);
+					compComment.setText("HIT");
 				} else if (button[i][j] == event.getSource()) {
 					button[i][j].setBackground(Color.cyan);
 					uTurnCount++;
 					uTurnNum.setText("# Turns: " + uTurnCount);
 					uMissCount++;
 					uMissNum.setText("# Misses: " + uMissCount);
+					compComment.setText("MISS");
 				}
 			}
+		}
+
+		if (nextMove == event.getSource()) {
+			cChooseLabel.setText("The computer's coordinate choice: " + bestMove(ships, probability, hits)[0]
+					+ bestMove(ships, probability, hits)[1]);
+			compComment.setText("");
+		}
+
+		if (advanced == event.getSource()) {
+			{
+				order();
+			}
+
+			if (toss == event.getSource()) // if toss button is clicked
+			{
+				tossCoin();
+			}
+			if (start == event.getSource()) {
+				complexShipAI(shipPlacementAI);
+				System.out.println("H");
+				gameBoard();
+			}
+
+			if (player == event.getSource()) // if player button is clicked
+			{
+				complexShipAI(shipPlacementAI);
+				gameBoard();
+			} else if (comp == event.getSource()) // if comp button is clicked
+			{
+				complexShipAI(shipPlacementAI);
+				gameBoard();
+				cChooseLabel.setText("The computer's coordinate choice: " + bestMove(ships, probability, hits)[0]
+						+ bestMove(ships, probability, hits)[1]);
+			}
+
+			if (hit == event.getSource()) {
+				Coordinate = enterCoordinate.getText();
+				enterCoordinate.setText("");
+				CoordinateSplit = Coordinate.split("");
+				if (checkInput(CoordinateSplit)) {
+					hits[StringtoInt(CoordinateSplit[0])][Integer.parseInt(CoordinateSplit[1])] = -1;
+				} else {
+					JOptionPane.showMessageDialog(null, "Invalid Coordinate", "Warning", JOptionPane.WARNING_MESSAGE);
+				}
+
+			} else if (miss == event.getSource()) {
+				Coordinate = enterCoordinate.getText();
+				enterCoordinate.setText("");
+				CoordinateSplit = Coordinate.split("");
+				if (checkInput(CoordinateSplit)) {
+					hits[StringtoInt(CoordinateSplit[0])][Integer.parseInt(CoordinateSplit[1])] = -2;
+				} else {
+					JOptionPane.showMessageDialog(null, "Invalid Coordinate", "Warning", JOptionPane.WARNING_MESSAGE);
+				}
+			}
+
+			else if (nextMove == event.getSource()) {
+				cChooseLabel.setText("The computer's coordinate choice: " + bestMove(ships, probability, hits)[0]
+						+ bestMove(ships, probability, hits)[1]);
+			}
+			for (int i = 1; i < HEIGHT; i++) {
+				for (int j = 1; j < WIDTH; j++) {
+					if (shipPlacementAI[i][j] != 0 && button[i][j] == event.getSource()) {
+						button[i][j].setBackground(Color.red);
+						uTurnCount++;
+						uTurnNum.setText("# Turns: " + uTurnCount);
+						uHitCount++;
+						uHitNum.setText("# Hits: " + uHitCount);
+						compComment.setText("HIT");
+					} else if (button[i][j] == event.getSource()) {
+						button[i][j].setBackground(Color.cyan);
+						uTurnCount++;
+						uTurnNum.setText("# Turns: " + uTurnCount);
+						uMissCount++;
+						uMissNum.setText("# Misses: " + uMissCount);
+						compComment.setText("MISS");
+					}
+				}
+			}
+
 		}
 	}
 
 	public static void main(String[] args) {
-		battleship Frame = new battleship(); // display frame
+		BattleshipGUI Frame = new BattleshipGUI(); // display frame
 	}
 
 	public static int StringtoInt(String coordinateSplit2) {
@@ -591,7 +731,8 @@ public class battleship extends JFrame implements ActionListener {
 						if (i < 9 && probability[i + 1][j] == -1) {
 							maxProbability = probability[i - 1][j];
 							int count = 0;
-							while (i + 1 + count < 9 && probability[i + 1 + count][j] == -1 && probability[i + 1 + count][j] != -2) {
+							while (i + 1 + count < 9 && probability[i + 1 + count][j] == -1
+									&& probability[i + 1 + count][j] != -2) {
 								count++;
 							}
 							if (probability[i + 1 + count][j] > maxProbability) {
@@ -605,7 +746,8 @@ public class battleship extends JFrame implements ActionListener {
 						} else if (i > 0 && probability[i - 1][j] == -1) {
 							maxProbability = probability[i + 1][j];
 							int count = 0;
-							while (i - 1 - count > 0 && probability[i - 1 - count][j] == -1 && probability[i - 1 - count][j] != -2) {
+							while (i - 1 - count > 0 && probability[i - 1 - count][j] == -1
+									&& probability[i - 1 - count][j] != -2) {
 								count++;
 							}
 							if (probability[i - 1 - count][j] > maxProbability) {
@@ -618,7 +760,8 @@ public class battleship extends JFrame implements ActionListener {
 						} else if (j < 9 && probability[i][j + 1] == -1) {
 							maxProbability = probability[i][j - 1];
 							int count = 0;
-							while (j + 1 + count < 9 && probability[i][j + 1 + count] == -1 && probability[i][j + 1 + count] != -2) {
+							while (j + 1 + count < 9 && probability[i][j + 1 + count] == -1
+									&& probability[i][j + 1 + count] != -2) {
 								count++;
 							}
 							if (probability[i][j + 1 + count] > maxProbability) {
@@ -631,7 +774,8 @@ public class battleship extends JFrame implements ActionListener {
 						} else if (j > 0 && probability[i][j - 1] == -1) {
 							maxProbability = probability[i][j + 1];
 							int count = 0;
-							while (j - 1 - count > 0 && probability[i][j - 1 - count] == -1 && probability[i][j + 1 + count] != -2) {
+							while (j - 1 - count > 0 && probability[i][j - 1 - count] == -1
+									&& probability[i][j + 1 + count] != -2) {
 								count++;
 							}
 							if (probability[i][j + 1 + count] > maxProbability) {
