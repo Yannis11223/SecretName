@@ -16,9 +16,6 @@ public class Battleship extends JFrame implements ActionListener {
 	static final String[] X_AXIS_LABEL = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
 	static String Coordinate;
 	static String[] CoordinateSplit;
-	int[][] hits = new int[11][11];
-	String[] ships = { "Carrier", "Battleship", "Cruiser", "Submarine", "Destroyer" };
-	int[][] probability = new int[10][10];
 
 	JPanel levelPan = new JPanel();
 	JPanel coinPan = new JPanel();
@@ -486,6 +483,7 @@ public class Battleship extends JFrame implements ActionListener {
 
 	public void actionPerformed(ActionEvent event) {
 		if (easy == event.getSource()) {
+			computer.setIsAdvanced(false);
 			order();
 		}
 
@@ -550,7 +548,7 @@ public class Battleship extends JFrame implements ActionListener {
 		}
 
 		if (nextMove == event.getSource()) {
-			cChooseLabel.setText("The computer's coordinate choice: " + computer.getMove());
+			cChooseLabel.setText("The computer's coordinate choice: " + computer.getAdvancedMove());
 			compComment.setText("");
 		}
 
@@ -559,8 +557,7 @@ public class Battleship extends JFrame implements ActionListener {
 				order();
 			}
 
-			if (toss == event.getSource()) // if toss button is clicked
-			{
+			if (toss == event.getSource()) {
 				tossCoin();
 			}
 			if (start == event.getSource()) {
@@ -577,13 +574,13 @@ public class Battleship extends JFrame implements ActionListener {
 			{
 				complexShipAI(shipPlacementAI);
 				gameBoard();
-				cChooseLabel.setText("The computer's coordinate choice: " + computer.getMove());
+				cChooseLabel.setText("The computer's coordinate choice: " + computer.getAdvancedMove());
 			}
 
 		}
 
 		else if (nextMove == event.getSource()) {
-			cChooseLabel.setText("The computer's coordinate choice: " + computer.getMove());
+			cChooseLabel.setText("The computer's coordinate choice: " + computer.getAdvancedMove());
 		}
 		for (int i = 1; i < HEIGHT; i++) {
 			for (int j = 1; j < WIDTH; j++) {
