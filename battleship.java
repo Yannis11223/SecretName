@@ -458,7 +458,7 @@ public class Battleship extends JFrame implements ActionListener {
       x = (int) (Math.random() * (11 - shipLength[i])) + 1;
       for (int a = 0; a < shipLength[i]; a++) {
        System.out.println(shipPlacement[1][x + a]);
-       shipPlacementAI[11][x + a] = shipLength[i];
+       shipPlacementAI[10][x + a] = shipLength[i];
       }
      }
     } else if (orient == 1) // vertical
@@ -475,7 +475,7 @@ public class Battleship extends JFrame implements ActionListener {
       x = (int) (Math.random() * (11 - shipLength[i])) + 1;
       for (int a = 0; a < shipLength[i]; a++) {
        System.out.println(shipPlacement[x + a][11]);
-       shipPlacementAI[x + a][11] = shipLength[i];
+       shipPlacementAI[x + a][10] = shipLength[i];
       }
      }
     }
