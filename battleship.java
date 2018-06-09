@@ -548,40 +548,37 @@ public class Battleship extends JFrame implements ActionListener {
 		}
 
 		if (nextMove == event.getSource()) {
-			cChooseLabel.setText("The computer's coordinate choice: " + computer.getAdvancedMove());
+			cChooseLabel.setText("The computer's coordinate choice: " + computer.getMove());
 			compComment.setText("");
 		}
 
 		if (advanced == event.getSource()) {
-			{
-				order();
-			}
 
-			if (toss == event.getSource()) {
-				tossCoin();
-			}
-			if (start == event.getSource()) {
-				complexShipAI(shipPlacementAI);
-				System.out.println("H");
-				gameBoard();
-			}
+			computer.setIsAdvanced(true);
 
-			if (player == event.getSource()) // if player button is clicked
-			{
-				complexShipAI(shipPlacementAI);
-				gameBoard();
-			} else if (comp == event.getSource()) // if comp button is clicked
-			{
-				complexShipAI(shipPlacementAI);
-				gameBoard();
-				cChooseLabel.setText("The computer's coordinate choice: " + computer.getAdvancedMove());
-			}
-
+			order();
 		}
 
-		else if (nextMove == event.getSource()) {
-			cChooseLabel.setText("The computer's coordinate choice: " + computer.getAdvancedMove());
+		if (toss == event.getSource()) {
+			tossCoin();
 		}
+		if (start == event.getSource()) {
+			complexShipAI(shipPlacementAI);
+			System.out.println("H");
+			gameBoard();
+		}
+
+		if (player == event.getSource()) // if player button is clicked
+		{
+			complexShipAI(shipPlacementAI);
+			gameBoard();
+		} else if (comp == event.getSource()) // if comp button is clicked
+		{
+			complexShipAI(shipPlacementAI);
+			gameBoard();
+			cChooseLabel.setText("The computer's coordinate choice: " + computer.getMove());
+		}
+
 		for (int i = 1; i < HEIGHT; i++) {
 			for (int j = 1; j < WIDTH; j++) {
 				if (shipPlacementAI[i][j] != 0 && button[i][j] == event.getSource()) {
