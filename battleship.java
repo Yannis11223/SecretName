@@ -6,7 +6,9 @@ import javax.swing.*;
 import java.awt.Color;
 import javax.swing.border.*;
 
-public class BattleshipGUI extends JFrame implements ActionListener {
+public class Battleship extends JFrame implements ActionListener {
+
+	battleship_AI computer = new battleship_AI();
 
 	static final int WIDTH = 11;
 	static final int HEIGHT = 11;
@@ -88,7 +90,7 @@ public class BattleshipGUI extends JFrame implements ActionListener {
 	int cRemShipCount = 0;
 	int tossCoin;
 
-	public BattleshipGUI() {
+	public Battleship() {
 		setSize(600, 300);
 		setTitle("Level");
 
@@ -487,8 +489,7 @@ public class BattleshipGUI extends JFrame implements ActionListener {
 			order();
 		}
 
-		if (toss == event.getSource()) // if toss button is clicked
-		{
+		if (toss == event.getSource()) {
 			tossCoin();
 		}
 		if (start == event.getSource()) {
@@ -496,10 +497,11 @@ public class BattleshipGUI extends JFrame implements ActionListener {
 			simpleShipAI();
 		}
 
-		if (player == event.getSource()) // if player button is clicked
-		{
+		if (player == event.getSource()) {
+
 			gameBoard();
 			simpleShipAI();
+
 		} else if (comp == event.getSource()) {
 			gameBoard();
 			simpleCoordinateAI();
@@ -511,7 +513,7 @@ public class BattleshipGUI extends JFrame implements ActionListener {
 			enterCoordinate.setText("");
 			CoordinateSplit = Coordinate.split("");
 			if (checkInput(CoordinateSplit)) {
-				hits[StringtoInt(CoordinateSplit[0])][Integer.parseInt(CoordinateSplit[1])] = -1;
+				computer.setHit(Coordinate);
 			} else {
 				JOptionPane.showMessageDialog(null, "Invalid Coordinate", "Warning", JOptionPane.WARNING_MESSAGE);
 			}
@@ -521,7 +523,7 @@ public class BattleshipGUI extends JFrame implements ActionListener {
 			enterCoordinate.setText("");
 			CoordinateSplit = Coordinate.split("");
 			if (checkInput(CoordinateSplit)) {
-				hits[StringtoInt(CoordinateSplit[0])][Integer.parseInt(CoordinateSplit[1])] = -2;
+				computer.setMiss(Coordinate);
 			} else {
 				JOptionPane.showMessageDialog(null, "Invalid Coordinate", "Warning", JOptionPane.WARNING_MESSAGE);
 			}
@@ -548,8 +550,7 @@ public class BattleshipGUI extends JFrame implements ActionListener {
 		}
 
 		if (nextMove == event.getSource()) {
-			cChooseLabel.setText("The computer's coordinate choice: " + bestMove(ships, probability, hits)[0]
-					+ bestMove(ships, probability, hits)[1]);
+			cChooseLabel.setText("The computer's coordinate choice: " + computer.getMove());
 			compComment.setText("");
 		}
 
@@ -576,69 +577,38 @@ public class BattleshipGUI extends JFrame implements ActionListener {
 			{
 				complexShipAI(shipPlacementAI);
 				gameBoard();
-				cChooseLabel.setText("The computer's coordinate choice: " + bestMove(ships, probability, hits)[0]
-						+ bestMove(ships, probability, hits)[1]);
-			}
-
-			if (hit == event.getSource()) {
-				Coordinate = enterCoordinate.getText();
-				enterCoordinate.setText("");
-				CoordinateSplit = Coordinate.split("");
-				if (checkInput(CoordinateSplit)) {
-					hits[StringtoInt(CoordinateSplit[0])][Integer.parseInt(CoordinateSplit[1])] = -1;
-				} else {
-					JOptionPane.showMessageDialog(null, "Invalid Coordinate", "Warning", JOptionPane.WARNING_MESSAGE);
-				}
-
-			} else if (miss == event.getSource()) {
-				Coordinate = enterCoordinate.getText();
-				enterCoordinate.setText("");
-				CoordinateSplit = Coordinate.split("");
-				if (checkInput(CoordinateSplit)) {
-					hits[StringtoInt(CoordinateSplit[0])][Integer.parseInt(CoordinateSplit[1])] = -2;
-				} else {
-					JOptionPane.showMessageDialog(null, "Invalid Coordinate", "Warning", JOptionPane.WARNING_MESSAGE);
-				}
-			}
-
-			else if (nextMove == event.getSource()) {
-				cChooseLabel.setText("The computer's coordinate choice: " + bestMove(ships, probability, hits)[0]
-						+ bestMove(ships, probability, hits)[1]);
-			}
-			for (int i = 1; i < HEIGHT; i++) {
-				for (int j = 1; j < WIDTH; j++) {
-					if (shipPlacementAI[i][j] != 0 && button[i][j] == event.getSource()) {
-						button[i][j].setBackground(Color.red);
-						uTurnCount++;
-						uTurnNum.setText("# Turns: " + uTurnCount);
-						uHitCount++;
-						uHitNum.setText("# Hits: " + uHitCount);
-						compComment.setText("HIT");
-					} else if (button[i][j] == event.getSource()) {
-						button[i][j].setBackground(Color.cyan);
-						uTurnCount++;
-						uTurnNum.setText("# Turns: " + uTurnCount);
-						uMissCount++;
-						uMissNum.setText("# Misses: " + uMissCount);
-						compComment.setText("MISS");
-					}
-				}
+				cChooseLabel.setText("The computer's coordinate choice: " + computer.getMove());
 			}
 
 		}
+
+		else if (nextMove == event.getSource()) {
+			cChooseLabel.setText("The computer's coordinate choice: " + computer.getMove());
+		}
+		for (int i = 1; i < HEIGHT; i++) {
+			for (int j = 1; j < WIDTH; j++) {
+				if (shipPlacementAI[i][j] != 0 && button[i][j] == event.getSource()) {
+					button[i][j].setBackground(Color.red);
+					uTurnCount++;
+					uTurnNum.setText("# Turns: " + uTurnCount);
+					uHitCount++;
+					uHitNum.setText("# Hits: " + uHitCount);
+					compComment.setText("HIT");
+				} else if (button[i][j] == event.getSource()) {
+					button[i][j].setBackground(Color.cyan);
+					uTurnCount++;
+					uTurnNum.setText("# Turns: " + uTurnCount);
+					uMissCount++;
+					uMissNum.setText("# Misses: " + uMissCount);
+					compComment.setText("MISS");
+				}
+			}
+		}
+
 	}
 
 	public static void main(String[] args) {
 		BattleshipGUI Frame = new BattleshipGUI(); // display frame
-	}
-
-	public static int StringtoInt(String coordinateSplit2) {
-		for (int i = 0; i < Y_AXIS_LABEL.length; i++) {
-			if (coordinateSplit2.equals(Y_AXIS_LABEL[i])) {
-				return (i + 1);
-			}
-		}
-		return 0;
 	}
 
 	public static boolean checkInput(String[] input) {
@@ -653,234 +623,5 @@ public class BattleshipGUI extends JFrame implements ActionListener {
 			}
 		}
 		return false;
-	}
-
-	////////////////////////////////////////////////////////////// AI CODE DON'T
-	////////////////////////////////////////////////////////////// TOUCH
-	public static String[] bestMove(String[] ships, int[][] probability, int[][] hits) {
-
-		String[] coordinate = new String[2];
-		int[] moveCoordinates = new int[2];
-		// best Coordinates in form y x
-		int hitCount = 0;
-		int maxProbability = 0;
-
-		calculateDensity(ships, probability, hits);
-
-		for (int i = 0; i < (probability.length); i++) {
-			for (int j = 0; j < probability[i].length; j++) {
-				if (probability[i][j] == -1) {
-					hitCount++;
-				}
-			}
-		}
-
-		if (hitCount == 0) {
-			// No hits probability guess mode
-			for (int i = 0; i < (probability.length); i++) {
-				for (int j = 0; j < probability[i].length; j++) {
-					if (probability[i][j] > maxProbability) {
-						maxProbability = probability[i][j];
-						moveCoordinates[0] = i;
-						moveCoordinates[1] = j;
-					}
-				}
-			}
-			coordinate[0] = Y_AXIS_LABEL[moveCoordinates[0]];
-			coordinate[1] = X_AXIS_LABEL[moveCoordinates[1]];
-			return coordinate;
-
-		} else if (hitCount == 1) {
-			// One hit hunt mode
-			for (int i = 0; i < (probability.length); i++) {
-				for (int j = 0; j < probability[i].length; j++) {
-					if (probability[i][j] == -1) {
-						if (i < 9) {
-							maxProbability = probability[i + 1][j];
-							moveCoordinates[0] = i + 1;
-							moveCoordinates[1] = j;
-						}
-						if (i > 0 && probability[i - 1][j] > maxProbability) {
-							maxProbability = probability[i - 1][j];
-							moveCoordinates[0] = i - 1;
-							moveCoordinates[1] = j;
-						}
-						if (j < 9 && probability[i][j + 1] > maxProbability) {
-							maxProbability = probability[i][j + 1];
-							moveCoordinates[0] = i;
-							moveCoordinates[1] = j + 1;
-						}
-						if (j > 0 && probability[i][j - 1] > maxProbability) {
-							maxProbability = probability[i][j - 1];
-							moveCoordinates[0] = i;
-							moveCoordinates[1] = j - 1;
-						}
-						coordinate[0] = Y_AXIS_LABEL[moveCoordinates[0]];
-						coordinate[1] = X_AXIS_LABEL[moveCoordinates[1]];
-						return coordinate;
-					}
-				}
-			}
-
-		} else {
-			// Greater than one hit, sink mode
-			for (int i = 0; i < (probability.length); i++) {
-				for (int j = 0; j < probability[i].length; j++) {
-					if (probability[i][j] == -1) {
-						// if hits are not on the edges
-						if (i < 9 && probability[i + 1][j] == -1) {
-							maxProbability = probability[i - 1][j];
-							int count = 0;
-							while (i + 1 + count < 9 && probability[i + 1 + count][j] == -1
-									&& probability[i + 1 + count][j] != -2) {
-								count++;
-							}
-							if (probability[i + 1 + count][j] > maxProbability) {
-								moveCoordinates[0] = i + 1 + count;
-								moveCoordinates[1] = j;
-							} else {
-								moveCoordinates[0] = i - 1;
-								moveCoordinates[1] = j;
-							}
-
-						} else if (i > 0 && probability[i - 1][j] == -1) {
-							maxProbability = probability[i + 1][j];
-							int count = 0;
-							while (i - 1 - count > 0 && probability[i - 1 - count][j] == -1
-									&& probability[i - 1 - count][j] != -2) {
-								count++;
-							}
-							if (probability[i - 1 - count][j] > maxProbability) {
-								moveCoordinates[0] = i - 1 - count;
-								moveCoordinates[1] = j;
-							} else {
-								moveCoordinates[0] = i + 1;
-								moveCoordinates[1] = j;
-							}
-						} else if (j < 9 && probability[i][j + 1] == -1) {
-							maxProbability = probability[i][j - 1];
-							int count = 0;
-							while (j + 1 + count < 9 && probability[i][j + 1 + count] == -1
-									&& probability[i][j + 1 + count] != -2) {
-								count++;
-							}
-							if (probability[i][j + 1 + count] > maxProbability) {
-								moveCoordinates[0] = i;
-								moveCoordinates[1] = j + 1 + count;
-							} else {
-								moveCoordinates[0] = i;
-								moveCoordinates[1] = j - 1;
-							}
-						} else if (j > 0 && probability[i][j - 1] == -1) {
-							maxProbability = probability[i][j + 1];
-							int count = 0;
-							while (j - 1 - count > 0 && probability[i][j - 1 - count] == -1
-									&& probability[i][j + 1 + count] != -2) {
-								count++;
-							}
-							if (probability[i][j + 1 + count] > maxProbability) {
-								moveCoordinates[0] = i - 1 - count;
-								moveCoordinates[1] = j;
-							} else {
-								moveCoordinates[0] = i + 1;
-								moveCoordinates[1] = j;
-							}
-						}
-						coordinate[0] = Y_AXIS_LABEL[moveCoordinates[0]];
-						coordinate[1] = X_AXIS_LABEL[moveCoordinates[1]];
-						return coordinate;
-
-					}
-				}
-			}
-		}
-		coordinate[0] = Y_AXIS_LABEL[moveCoordinates[0]];
-		coordinate[1] = X_AXIS_LABEL[moveCoordinates[1]];
-		return coordinate;
-	}
-
-	public static void calculateDensity(String[] ships, int[][] probability, int[][] hits) {
-
-		probability = initializeAI(hits, probability);
-
-		for (int i = 0; i < ships.length; i++) {
-			if (ships[i].equals("Carrier")) {
-				probability = calculateShipDensity(5, probability);
-
-			} else if (ships[i].equals("Battleship")) {
-				probability = calculateShipDensity(4, probability);
-
-			} else if (ships[i].equals("Cruiser")) {
-				probability = calculateShipDensity(3, probability);
-
-			} else if (ships[i].equals("Submarine")) {
-				probability = calculateShipDensity(3, probability);
-
-			} else if (ships[i].equals("Destroyer")) {
-				probability = calculateShipDensity(2, probability);
-
-			}
-		}
-
-	}
-
-	public static int[][] initializeAI(int[][] hitGrid, int[][] probability) {
-		for (int i = 1; i < hitGrid.length; i++) {
-			for (int j = 1; j < (hitGrid[i].length); j++) {
-				if (hitGrid[i][j] == -1) {
-					// -1 is placeholder for hit marker
-					probability[i - 1][j - 1] = -1;
-					// -1 is placeholder for hit marker
-
-				} else if (hitGrid[i][j] == -2) {
-					// -2 is placeholder for missed or sunk ships
-
-					probability[i - 1][j - 1] = -2;
-					// -2 is placeholder for missed or sunk ships
-
-				} else {
-					probability[i - 1][j - 1] = 0;
-				}
-			}
-		}
-		return probability;
-	}
-
-	public static int[][] calculateShipDensity(int shipLength, int[][] probability) {
-
-		for (int i = 0; i <= (probability.length - shipLength); i++) {
-			for (int j = 0; j < probability[i].length; j++) {
-				for (int k = 0; k < shipLength; k++) {
-					if (probability[i + k][j] == -1 || probability[i + k][j] == -2) {
-						// -1 is placeholder for hit marker
-						// -2 is a placeholder for missed or sunk ships
-						break;
-					} else if (k == shipLength - 1) {
-						for (int l = 0; l < shipLength; l++) {
-							probability[i + l][j]++;
-						}
-					}
-				}
-
-			}
-		}
-
-		for (int i = 0; i < probability.length; i++) {
-			for (int j = 0; j <= (probability[i].length - shipLength); j++) {
-				for (int k = 0; k < shipLength; k++) {
-					if (probability[i][j + k] == -1 || probability[i][j + k] == -2) {
-						// -1 is placeholder for hit marker
-						// -2 is a placeholder for missed or sunk ships
-						break;
-					} else if (k == shipLength - 1) {
-						for (int l = 0; l < shipLength; l++) {
-							probability[i][j + l]++;
-						}
-					}
-				}
-
-			}
-		}
-		return probability;
 	}
 }
