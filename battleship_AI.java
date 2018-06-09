@@ -36,20 +36,25 @@ public class battleship_AI {
 		probability[hitIndex[0]][hitIndex[1]] = -1;
 	}
 
+	public void setMiss(String hitCoordinate) {
+		int[] hitIndex = coordinateToIndex(hitCoordinate);
+		probability[hitIndex[0]][hitIndex[1]] = -2;
+	}
+
 	public void setSunk(String startCoordinate, String endCoordinate) {
-		
+
 		int[] startIndex = coordinateToIndex(startCoordinate);
 		int[] endIndex = coordinateToIndex(endCoordinate);
 
 		if (startIndex[0] == endIndex[0]) {
 			// if the ship is horizontal
-			for(int i = 0; i < (endIndex[1] - startIndex[1] + 1); i++) {
+			for (int i = 0; i < (endIndex[1] - startIndex[1] + 1); i++) {
 				probability[startIndex[0]][startIndex[1] + i] = -2;
 			}
-			
+
 		} else {
 			// if the ship is vertical
-			for(int i = 0; i < (endIndex[0] - startIndex[0] + 1); i++) {
+			for (int i = 0; i < (endIndex[0] - startIndex[0] + 1); i++) {
 				probability[startIndex[0] + i][startIndex[1]] = -2;
 			}
 		}
