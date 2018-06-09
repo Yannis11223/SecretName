@@ -435,39 +435,60 @@ public class Battleship extends JFrame implements ActionListener {
 
  public static boolean valid (int x, int x2, int x3, int shipPlacementAI [][])
  {
-   boolean booValid= false;
+   boolean booValid= true;
    
    if (x2==1 || x2==10)
    {
-     for (int i=x; i<x3; i++)
+     for (int i=x; i<=x3; i++)
      {
-       if (shipPlacementAI[x2][i]==0)
+       if (shipPlacementAI[x2][i]!=0)
        {
-         booValid = true;
+         booValid = false;
        }
      }
    }
    else if (x3==1 || x3==10)
    {
-     for (int i=x; i<x2; i++)
+     for (int i=x; i<=x2; i++)
      {
-       if (shipPlacementAI[i][x3]==0)
+       if (shipPlacementAI[i][x3]!=0)
        {
-         booValid = true;
+         booValid = false;
        }
      }
    }
-   else 
+   return booValid;
+ }
+ 
+ public static boolean valid1 (int orient, int x, int x2, int x3, int shipPlacementAI [][])
+ {
+   boolean booValid = true;
+   
+   if (orient == 0)
    {
-     booValid = false;
+     for (int i=x; i<=x3; i++)
+     {
+       if (shipPlacementAI[x2][i]!=0)
+       {
+         booValid = false;
+       }
+     }
+   } else if (orient == 1)
+   {
+     for (int i=x; i<=x2; i++)
+     {
+       if (shipPlacementAI[i][x3]!=0)
+       {
+         booValid = false;
+       }
+     }
    }
    return booValid;
  }
-
+ 
  public void complexShipAI(int shipPlacementAI[][], int shipLength []) {
-   int randArrangement = 0; // (int)(Math.random()* 2);
-   int x = 1;
-   int x2, x3;
+   int randArrangement = 1; // (int)(Math.random()* 2);
+   int x, x2, x3;
    boolean booValid;
    
    if (randArrangement == 0) // edge arrangement
@@ -482,59 +503,99 @@ public class Battleship extends JFrame implements ActionListener {
          if (topOrBottom == 0) // top
          {
            do {
-             x = (int) (Math.random() * (11 - shipLength[i])) + 1;
+             x = (int) (Math.random() * (10 - shipLength[i])) + 1;
              x2 = 1;
              x3 = x + shipLength[i];
              booValid = valid(x, x2, x3, shipPlacementAI);
-           } while (booValid = false);
+           } while (booValid == false);
+           System.out.println(booValid);
            for (int a = 0; a < shipLength[i]; a++) {
              shipPlacementAI[1][x + a] = shipLength[i];
            }
          } else if (topOrBottom == 1) // bottom
          {
            do {
-             x = (int) (Math.random() * (11 - shipLength[i])) + 1;
+             x = (int) (Math.random() * (10 - shipLength[i])) + 1;
              x2 = 10;
              x3 = x + shipLength[i];
              booValid = valid(x, x2, x3, shipPlacementAI);
-         } while (booValid = false);
-         for (int a = 0; a < shipLength[i]; a++) {
-           shipPlacementAI[10][x + a] = shipLength[i];
+           } while (booValid == false);
+           System.out.println(booValid);
+           for (int a = 0; a < shipLength[i]; a++) {
+             shipPlacementAI[10][x + a] = shipLength[i];
+           }
          }
-       }
-     } else if (orient == 1) // vertical
-     {
-       if (leftOrRight == 0) // left
+       } else if (orient == 1) // vertical
        {
-         do {
-           x = (int) (Math.random() * (11 - shipLength[i])) + 1;
-           x2 = x + shipLength[i];
-           x3 = 1;
-           booValid = valid(x, x2, x3, shipPlacementAI);
-         } while (booValid = false);
-         for (int a = 0; a < shipLength[i]; a++) {
-           shipPlacementAI[x + a][1] = shipLength[i];
-         }
-       } else if (leftOrRight == 1) // right
-       {
-         do {
-           x = (int) (Math.random() * (11 - shipLength[i])) + 1;
-           x2 = x + shipLength[i];
-           x3 = 10;
-           booValid = valid(x, x2, x3, shipPlacementAI);
-         } while (booValid = false);
-         for (int a = 0; a < shipLength[i]; a++) {
-           shipPlacementAI[x + a][10] = shipLength[i];
+         if (leftOrRight == 0) // left
+         {
+           do {
+             x = (int) (Math.random() * (10 - shipLength[i])) + 1;
+             x2 = x + shipLength[i];
+             x3 = 1;
+             booValid = valid(x, x2, x3, shipPlacementAI);
+           } while (booValid == false);
+           System.out.println(booValid);
+           for (int a = 0; a < shipLength[i]; a++) {
+             shipPlacementAI[x + a][1] = shipLength[i];
+           }
+         } else if (leftOrRight == 1) // right
+         {
+           do {
+             x = (int) (Math.random() * (10 - shipLength[i])) + 1;
+             x2 = x + shipLength[i];
+             x3 = 10;
+             booValid = valid(x, x2, x3, shipPlacementAI);
+           } while (booValid == false);
+           System.out.println(booValid);
+           for (int a = 0; a < shipLength[i]; a++) {
+             shipPlacementAI[x + a][10] = shipLength[i];
+           }
          }
        }
      }
-   }
-  } else if (randArrangement == 1) // middle arrangement
-  {
-  } else if (randArrangement == 2) // middle and edge arrangement
-  {
+   } else if (randArrangement == 1) // middle arrangement
+   {
+     for (int i = 0; i < shipLength.length; i++) {
+       int orient = (int) (Math.random() * 2);
+       
+       if (orient == 0) // horizontal
+       {
+         do {
+           x = (int) (Math.random() * (8 - shipLength[i])) + 2;
+           x2 = (int) (Math.random() * (8 - shipLength[i])) + 2;
+           x3 = x + shipLength[i];
+           booValid = valid1(orient, x, x2, x3, shipPlacementAI);
+         } while (booValid == false);
+         for (int a = 0; a < shipLength[i]; a++) {
+           shipPlacementAI[x2][x + a] = shipLength[i];
+         }
+       } else if (orient == 1) // vertical
+       {
+         do {
+           x = (int) (Math.random() * (8 - shipLength[i])) + 2;
+           x2 = x + shipLength[i];
+           x3 = (int) (Math.random() * (8 - shipLength[i])) + 2;;
+           booValid = valid1(orient, x, x2, x3, shipPlacementAI);
+         } while (booValid == false);
+         for (int a = 0; a < shipLength[i]; a++) {
+           shipPlacementAI[x + a][x3] = shipLength[i];
+         }
+       }
+     }
+   } else if (randArrangement == 2) // middle and edge arrangement
+   {
   }
   
+   for (int i=0; i<11; i++)
+   {
+     for (int a=0; a<11; a++)
+     {
+       System.out.print(shipPlacementAI[i][a]);
+     }
+     System.out.println();
+   }
+   
  }
 
  public void actionPerformed(ActionEvent event) {
