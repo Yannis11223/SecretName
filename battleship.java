@@ -434,10 +434,10 @@ public class Battleship extends JFrame implements ActionListener {
  }
 
  public void complexShipAI(int shipPlacementAI[][], int shipLength []) {
-  int randArrangement = 0; // (int)(Math.random()* 2);
-  int orient = (int) (Math.random() * 1);
-  int topOrBottom = (int) (Math.random() * 1);
-  int leftOrRight = (int) (Math.random() * 1);
+  int randArrangement = 0; // (int)(Math.random()* 3);
+  int orient = (int) (Math.random() * 2);
+  int topOrBottom = (int) (Math.random() * 2);
+  int leftOrRight = (int) (Math.random() * 2);
   int x = 1;
 
   if (randArrangement == 0) // edge arrangement
