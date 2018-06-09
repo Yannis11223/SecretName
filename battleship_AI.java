@@ -1,5 +1,7 @@
 package BattleShip;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class battleship_AI {
 	private final String[] Y_AXIS_LABEL = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" };
 	private final String[] X_AXIS_LABEL = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
@@ -7,6 +9,7 @@ public class battleship_AI {
 	private final int WIDTH = 10;
 	private final int HEIGHT = 10;
 	private final int numberOfShips = 5;
+	private boolean isAdvanced = false;
 
 	private int[][] probability = new int[HEIGHT][WIDTH];
 	private boolean[] activeShips = new boolean[numberOfShips];
@@ -25,10 +28,15 @@ public class battleship_AI {
 
 	}
 
-	public String getMove() {
-		String coordinate = Y_AXIS_LABEL[bestMove(activeShips, probability)[0]];
-		coordinate += X_AXIS_LABEL[bestMove(activeShips, probability)[1]];
+	public String getAdvancedMove() {
+		String coordinate = Y_AXIS_LABEL[advancedMove(activeShips, probability)[0]];
+		coordinate += X_AXIS_LABEL[advancedMove(activeShips, probability)[1]];
 		return coordinate;
+	}
+
+	public void setIsAdvanced(boolean isAdvancedinput) {
+		isAdvanced = isAdvancedinput;
+
 	}
 
 	public void setHit(String hitCoordinate) {
@@ -79,7 +87,7 @@ public class battleship_AI {
 		return indexes;
 	}
 
-	private int[] bestMove(boolean[] ships, int[][] probability) {
+	private int[] advancedMove(boolean[] ships, int[][] probability) {
 
 		int[] moveCoordinates = new int[2];
 		// best Coordinates in form y x
@@ -96,7 +104,7 @@ public class battleship_AI {
 			}
 		}
 
-		if (hitCount == 0) {
+		if (hitCount == 0 && isAdvanced) {
 			// No hits probability guess mode
 			for (int i = 0; i < (probability.length); i++) {
 				for (int j = 0; j < probability[i].length; j++) {
@@ -107,6 +115,18 @@ public class battleship_AI {
 					}
 				}
 			}
+			return moveCoordinates;
+
+		} else if (hitCount == 0 && !isAdvanced) {
+			moveCoordinates[0] = ThreadLocalRandom.current().nextInt(0, HEIGHT);
+			moveCoordinates[1] = ThreadLocalRandom.current().nextInt(0, WIDTH);
+
+			while (probability[moveCoordinates[0]][moveCoordinates[1]] == -1
+					|| probability[moveCoordinates[0]][moveCoordinates[1]] == -2) {
+				moveCoordinates[0] = ThreadLocalRandom.current().nextInt(0, HEIGHT);
+				moveCoordinates[1] = ThreadLocalRandom.current().nextInt(0, WIDTH);
+			}
+
 			return moveCoordinates;
 
 		} else if (hitCount == 1) {
