@@ -28,9 +28,9 @@ public class battleship_AI {
 
 	}
 
-	public String getAdvancedMove() {
-		String coordinate = Y_AXIS_LABEL[advancedMove(activeShips, probability)[0]];
-		coordinate += X_AXIS_LABEL[advancedMove(activeShips, probability)[1]];
+	public String getMove() {
+		String coordinate = Y_AXIS_LABEL[calculateMove(activeShips, probability)[0]];
+		coordinate += X_AXIS_LABEL[calculateMove(activeShips, probability)[1]];
 		return coordinate;
 	}
 
@@ -87,7 +87,7 @@ public class battleship_AI {
 		return indexes;
 	}
 
-	private int[] advancedMove(boolean[] ships, int[][] probability) {
+	private int[] calculateMove(boolean[] ships, int[][] probability) {
 
 		int[] moveCoordinates = new int[2];
 		// best Coordinates in form y x
@@ -104,7 +104,7 @@ public class battleship_AI {
 			}
 		}
 
-		if (hitCount == 0 && isAdvanced) {
+		if (hitCount == 0 && isAdvanced == true) {
 			// No hits probability guess mode
 			for (int i = 0; i < (probability.length); i++) {
 				for (int j = 0; j < probability[i].length; j++) {
@@ -112,20 +112,19 @@ public class battleship_AI {
 						maxProbability = probability[i][j];
 						moveCoordinates[0] = i;
 						moveCoordinates[1] = j;
+
 					}
 				}
 			}
 			return moveCoordinates;
+			
+		} else if (hitCount == 0 && isAdvanced == false) {
 
-		} else if (hitCount == 0 && !isAdvanced) {
-			moveCoordinates[0] = ThreadLocalRandom.current().nextInt(0, HEIGHT);
-			moveCoordinates[1] = ThreadLocalRandom.current().nextInt(0, WIDTH);
-
-			while (probability[moveCoordinates[0]][moveCoordinates[1]] == -1
-					|| probability[moveCoordinates[0]][moveCoordinates[1]] == -2) {
+			do {
 				moveCoordinates[0] = ThreadLocalRandom.current().nextInt(0, HEIGHT);
 				moveCoordinates[1] = ThreadLocalRandom.current().nextInt(0, WIDTH);
-			}
+			} while (probability[moveCoordinates[0]][moveCoordinates[1]] == -1
+					|| probability[moveCoordinates[0]][moveCoordinates[1]] == -2);
 
 			return moveCoordinates;
 
