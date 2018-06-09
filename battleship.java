@@ -484,7 +484,7 @@ public class Battleship extends JFrame implements ActionListener {
            do {
              x = (int) (Math.random() * (11 - shipLength[i])) + 1;
              x2 = 1;
-             x3 =  + shipLength[i];
+             x3 = x + shipLength[i];
              booValid = valid(x, x2, x3, shipPlacementAI);
            } while (booValid = false);
            for (int a = 0; a < shipLength[i]; a++) {
