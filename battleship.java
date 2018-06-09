@@ -441,7 +441,7 @@ public class Battleship extends JFrame implements ActionListener {
    {
      for (int i=x; i<x3; i++)
      {
-       if (shipPlacementAI[x2][i]!=0)
+       if (shipPlacementAI[x2][i]==0)
        {
          booValid = true;
        }
@@ -451,7 +451,7 @@ public class Battleship extends JFrame implements ActionListener {
    {
      for (int i=x; i<x2; i++)
      {
-       if (shipPlacementAI[i][x3]!=0)
+       if (shipPlacementAI[i][x3]==0)
        {
          booValid = true;
        }
