@@ -645,7 +645,7 @@ public class Battleship extends JFrame implements ActionListener {
  }
 
  public static void main(String[] args) {
-  BattleshipGUI Frame = new BattleshipGUI(); // display frame
+  Battleship Frame = new Battleship(); // display frame
  }
 
  public static boolean checkInput(String[] input) {
